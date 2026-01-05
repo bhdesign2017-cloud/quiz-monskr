@@ -1,0 +1,20 @@
+# Vercel
+.vercel
+
+# Node modules (如果未來需要)
+node_modules/
+
+# 系統檔案
+.DS_Store
+Thumbs.db
+
+# 編輯器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 舊版檔案（可選）
+script.js
+style.css
+問題.md

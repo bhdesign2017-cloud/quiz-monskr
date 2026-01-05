@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONSKR 主機選購測驗</title>
+    <meta name="description" content="不知道該選一次性、換彈式還是注油式？回答 5 個問題，為您推薦最適合的 vaping 夥伴。">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        #monskr-quiz-app {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* 動畫效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 自定義黃色文字陰影，增加層次感 */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(254, 217, 38, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4">
+
+    <!-- 主容器：深灰底色 -->
+    <div id="monskr-quiz-app"
+        class="w-full max-w-md mx-auto my-10 bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 text-slate-200 leading-normal ring-1 ring-slate-800">
+
+        <!-- Header -->
+        <div class="bg-slate-950 p-5 flex justify-between items-center border-b border-slate-800">
+            <div class="flex items-center gap-2">
+                <!-- Logo Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-[#FED926] w-6 h-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <!-- 標題改為 MONSKR，使用指定黃色 -->
+                <span class="font-black tracking-widest text-[#FED926] text-lg">MONSKR</span>
+            </div>
+            <div id="quiz-progress-text" class="text-xs text-slate-500 font-mono"></div>
+        </div>
+
+        <!-- 內容區塊 -->
+        <div id="quiz-content" class="p-8 min-h-[450px] flex flex-col justify-center bg-slate-900">
+            <!-- 這裡會動態渲染內容 -->
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-slate-950 border-t border-slate-800 text-center">
+            <p class="text-[10px] text-slate-600 font-mono tracking-wide uppercase">
+                © 2026 MONSKR. All Rights Reserved. <br />
+                <span class="opacity-50">Selection guide powered by MONSKR.</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // === 資料設定 ===
+            const questions = [
+                {
+                    id: 1,
+                    question: "您對於「設備維護」（如清潔、更換耗材）的態度是？",
+                    options: [
+                        { text: "我超討厭維護，最好完全不需要動手，用完就丟。", type: "disposable" },
+                        { text: "我可以接受簡單的動作，例如拔插替換就好。", type: "pod" },
+                        { text: "我不介意動手，甚至喜歡研究如何讓口感更好。", type: "refillable" }
+                    ]
+                },
+                {
+                    id: 2,
+                    question: "當煙油耗盡時，您希望怎麼處理？",
+                    options: [
+                        { text: "直接換一支全新的主機，乾淨利落。", type: "disposable" },
+                        { text: "換一顆新的煙彈就好，不想手沾到油。", type: "pod" },
+                        { text: "買喜歡的煙油自己添加，比較省錢也可以混搭口味。", type: "refillable" }
+                    ]
+                },
+                {
+                    id: 3,
+                    question: "您對於「煙霧量」與「口感調節」的需求是？",
+                    options: [
+                        { text: "沒什麼要求，有煙就好，味道穩定最重要。", type: "disposable" },
+                        { text: "喜歡穩定的口感，不需要太複雜的設定。", type: "pod" },
+                        { text: "我希望能調節瓦數、氣孔，追求極致的口感與爆發力。", type: "refillable" }
+                    ]
+                },
+                {
+                    id: 4,
+                    question: "關於攜帶出門，您最在乎的是？",
+                    options: [
+                        { text: "輕便至上，不想帶任何充電線或補充瓶。", type: "disposable" },
+                        { text: "體積小巧，放在口袋沒有負擔。", type: "pod" },
+                        { text: "體積稍微大一點沒關係，電量大、性能好比較重要。", type: "refillable" }
+                    ]
+                },
+                {
+                    id: 5,
+                    question: "如果用一句話形容您的消費性格？",
+                    options: [
+                        { text: "方便最重要，我願意花錢買時間與便利。", type: "disposable" },
+                        { text: "我喜歡在方便跟價格之間取得平衡。", type: "pod" },
+                        { text: "我追求長期的高CP值，前期投入設備沒關係。", type: "refillable" }
+                    ]
+                }
+            ];
+
+            // 結果資料，統一色調為黃色系，並加入連結（更新為 monskr25.com）
+            const results = {
+                disposable: {
+                    title: "一次性主機",
+                    subtitle: "懶人救星・即開即享",
+                    icon: `<svg class="w-20 h-20 text-[#FED926]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+                    description: "您追求極致的便利，不喜歡繁瑣的維護工作。一次性主機無需充電(部分)、無需注油，抽完整支即丟，是輕鬆享受的最佳選擇。",
+                    tags: ["免維護", "用完即丟", "極度輕便"],
+                    link: "https://monskr25.com/product-category/%e5%a4%a7%e5%b0%8f%e7%85%99%e4%b8%bb%e6%a9%9f/%e4%b8%80%e6%ac%a1%e6%80%a7%e4%b8%bb%e6%a9%9f-%e5%a4%a7%e5%b0%8f%e7%85%99%e4%b8%bb%e6%a9%9f/"
+                },
+                pod: {
+                    title: "換彈式主機",
+                    subtitle: "簡單便利・更換隨心",
+                    icon: `<svg class="w-20 h-20 text-[#FED926]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
+                    description: "您喜歡簡單方便的操作，但也希望比一次性更環保些。換彈式主機只需更換煙彈，不需接觸煙油，操作直覺，是市場上最受歡迎的平衡選擇。",
+                    tags: ["磁吸換彈", "乾淨衛生", "操作簡單"],
+                    link: "https://monskr25.com/product-category/%e5%a4%a7%e5%b0%8f%e7%85%99%e4%b8%bb%e6%a9%9f/%e6%8f%9b%e5%bd%88%e5%bc%8f%e4%b8%bb%e6%a9%9f/"
+                },
+                refillable: {
+                    title: "注油式主機",
+                    subtitle: "性能玩家・客製體驗",
+                    icon: `<svg class="w-20 h-20 text-[#FED926]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+                    description: "您重視性能表現與高CP值。注油式主機可自由調節瓦數、氣孔，並選擇自己喜歡的煙油口味，雖然需簡單維護，但帶來的口感體驗是最好的。",
+                    tags: ["可調瓦數", "自由注油", "性能強勁"],
+                    link: "https://monskr25.com/product-category/%e5%a4%a7%e5%b0%8f%e7%85%99%e4%b8%bb%e6%a9%9f/%e6%b3%a8%e6%b2%b9%e5%bc%8f%e4%b8%bb%e6%a9%9f/"
+                }
+            };
+
+            // === 狀態管理 ===
+            let currentState = {
+                step: 'intro',
+                qIndex: 0,
+                scores: { disposable: 0, pod: 0, refillable: 0 }
+            };
+
+            const container = document.getElementById('quiz-content');
+            const progressText = document.getElementById('quiz-progress-text');
+
+            // === 渲染函式 ===
+
+            // 1. 渲染開始頁面
+            function renderIntro() {
+                progressText.textContent = "";
+                container.innerHTML = `
+            <div class="text-center space-y-8 fade-in">
+                <div class="bg-[#FED926]/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto ring-1 ring-[#FED926]/30 shadow-[0_0_20px_rgba(254,217,38,0.1)]">
+                    <svg class="w-12 h-12 text-[#FED926]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-3 glow-text">找不到適合的主機？</h1>
+                    <p class="text-slate-400 leading-relaxed text-sm">
+                        市面上種類繁多，不知道該選一次性、換彈式還是注油式？<br/>
+                        回答 5 個問題，為您推薦最適合的 vaping 夥伴。
+                    </p>
+                </div>
+                <button id="btn-start" class="w-full bg-[#FED926] hover:bg-[#EBC514] text-slate-950 font-black py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-[#FED926]/20">
+                    開始測驗 
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        `;
+                document.getElementById('btn-start').addEventListener('click', () => {
+                    currentState.step = 'quiz';
+                    renderQuiz();
+                });
+            }
+
+            // 2. 渲染測驗題目
+            function renderQuiz() {
+                const q = questions[currentState.qIndex];
+                const progress = ((currentState.qIndex + 1) / questions.length) * 100;
+
+                progressText.textContent = `Q${currentState.qIndex + 1}/${questions.length}`;
+
+                let optionsHtml = '';
+                q.options.forEach((opt, idx) => {
+                    optionsHtml += `
+                <button class="btn-option w-full text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-[#FED926] transition-all duration-200 group mb-3 relative overflow-hidden" data-type="${opt.type}">
+                    <div class="relative z-10 flex items-center justify-between">
+                        <span class="text-slate-300 group-hover:text-[#FED926] font-medium transition-colors">${opt.text}</span>
+                        <svg class="w-4 h-4 text-[#FED926] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                </button>
+            `;
+                });
+
+                container.innerHTML = `
+            <div class="space-y-8 fade-in">
+                <!-- 進度條 -->
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-[#FED926] h-full transition-all duration-500 ease-out shadow-[0_0_10px_#FED926]" style="width: ${progress}%"></div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-white leading-relaxed mb-6">${q.question}</h2>
+                    <div class="space-y-3">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+                // 綁定按鈕事件
+                document.querySelectorAll('.btn-option').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const type = this.getAttribute('data-type');
+                        handleAnswer(type);
+                    });
+                });
+            }
+
+            // 3. 處理回答
+            function handleAnswer(type) {
+                currentState.scores[type]++;
+
+                if (currentState.qIndex < questions.length - 1) {
+                    currentState.qIndex++;
+                    renderQuiz();
+                } else {
+                    currentState.step = 'result';
+                    renderResult();
+                }
+            }
+
+            // 4. 計算並渲染結果
+            function renderResult() {
+                progressText.textContent = "";
+                // 找出最高分
+                const scores = currentState.scores;
+                const winnerKey = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+                const result = results[winnerKey];
+
+                let tagsHtml = result.tags.map(tag => `
+            <span class="px-3 py-1 bg-slate-800 border border-slate-700 rounded-full text-xs text-[#FED926] flex items-center gap-1 font-medium">
+                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                ${tag}
+            </span>
+        `).join('');
+
+                container.innerHTML = `
+            <div class="text-center space-y-6 fade-in">
+                <div class="space-y-2">
+                    <p class="text-slate-500 text-xs uppercase tracking-[0.2em]">Your Best Choice</p>
+                    <h2 class="text-3xl font-black text-[#FED926] glow-text">${result.title}</h2>
+                    <p class="text-white font-medium">${result.subtitle}</p>
+                </div>
+
+                <div class="relative inline-block py-4">
+                    <div class="absolute inset-0 bg-[#FED926] rounded-full blur-[30px] opacity-20"></div>
+                    <div class="relative bg-slate-800/50 p-6 rounded-full inline-block ring-1 ring-[#FED926]/30">
+                        ${result.icon}
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                    <p class="text-slate-300 text-sm leading-relaxed text-justify">
+                        ${result.description}
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-2 justify-center">
+                    ${tagsHtml}
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <!-- 主要按鈕：前往選購 -->
+                    <a href="${result.link}" target="_blank" class="block w-full bg-[#FED926] hover:bg-[#EBC514] text-slate-950 font-black py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-[#FED926]/20 flex items-center justify-center gap-2 group">
+                        前往選購此系列
+                        <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    
+                    <!-- 次要按鈕：重新測驗 -->
+                    <button id="btn-restart" class="block w-full bg-transparent border border-slate-700 hover:border-[#FED926] hover:text-[#FED926] text-slate-400 font-medium py-3 px-6 rounded-xl transition-colors text-sm">
+                        重新測驗
+                    </button>
+                </div>
+            </div>
+        `;
+
+                document.getElementById('btn-restart').addEventListener('click', () => {
+                    currentState = {
+                        step: 'intro',
+                        qIndex: 0,
+                        scores: { disposable: 0, pod: 0, refillable: 0 }
+                    };
+                    renderIntro();
+                });
+            }
+
+            // 初始化
+            renderIntro();
+        })();
+    </script>
+
+</body>
+
+</html>
