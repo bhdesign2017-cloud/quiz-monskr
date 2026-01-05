@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>測試嵌入 Ditto Quiz</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .quiz-container {
+            margin: 20px 0;
+        }
+
+        .note {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .note h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎯 Ditto Quiz 嵌入測試頁面</h1>
+    <p>這是一個示範如何將 Ditto Quiz 嵌入到您的網站的範例頁面</p>
+
+    <div class="container">
+        <h2 style="text-align: center; color: #333; margin-bottom: 30px;">主機選購測驗</h2>
+
+        <div class="quiz-container">
+            <!-- Ditto Quiz 嵌入程式碼 -->
+            <iframe src="./quiz-embed.html" width="100%" height="700" frameborder="0"
+                style="max-width: 500px; margin: 0 auto; display: block; border: none;" title="Ditto 主機選購測驗"
+                loading="lazy"></iframe>
+        </div>
+
+        <div class="note">
+            <h3>📝 如何嵌入到您的網站？</h3>
+            <p>只需要複製以下程式碼並貼到您的 HTML 中：</p>
+            <pre style="background: #fff; padding: 15px; border-radius: 8px; overflow-x: auto;"><code>&lt;!-- Ditto Quiz 嵌入程式碼 --&gt;
+&lt;iframe 
+  src="https://您的網域/quiz-embed.html"
+  width="100%"
+  height="700"
+  frameborder="0"
+  style="max-width: 500px; margin: 0 auto; display: block; border: none;"
+  title="Ditto 主機選購測驗"
+  loading="lazy"
+&gt;&lt;/iframe&gt;</code></pre>
+            <p style="margin-top: 15px; color: #666;">
+                💡 提示：前往 <code>embed.html</code> 頁面可以自訂尺寸並自動產生嵌入程式碼！
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ditto Quiz 嵌入程式碼產生器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .code-block {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 min-h-screen p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-[#FED926] w-10 h-10" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <h1 class="text-4xl font-black text-[#FED926]">Ditto Quiz</h1>
+            </div>
+            <p class="text-slate-400 text-lg">嵌入程式碼產生器</p>
+            <p class="text-slate-500 text-sm mt-2">輕鬆將 Quiz 嵌入到您的網站中</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- 左側：設定區 -->
+            <div class="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6">自訂設定</h2>
+
+                <!-- 寬度設定 -->
+                <div class="mb-6">
+                    <label class="block text-slate-300 font-medium mb-2">寬度</label>
+                    <div class="flex gap-4">
+                        <input type="number" id="width-input" value="100" min="300" max="100"
+                            class="flex-1 bg-slate-800 text-white px-4 py-3 rounded-lg border border-slate-700 focus:border-[#FED926] focus:outline-none">
+                        <select id="width-unit"
+                            class="bg-slate-800 text-white px-4 py-3 rounded-lg border border-slate-700 focus:border-[#FED926] focus:outline-none">
+                            <option value="%">%</option>
+                            <option value="px">px</option>
+                        </select>
+                    </div>
+                    <p class="text-slate-500 text-xs mt-2">建議使用 100% 以適應不同螢幕尺寸</p>
+                </div>
+
+                <!-- 高度設定 -->
+                <div class="mb-6">
+                    <label class="block text-slate-300 font-medium mb-2">高度 (px)</label>
+                    <input type="number" id="height-input" value="700" min="500" max="1200"
+                        class="w-full bg-slate-800 text-white px-4 py-3 rounded-lg border border-slate-700 focus:border-[#FED926] focus:outline-none">
+                    <p class="text-slate-500 text-xs mt-2">建議最小高度 700px</p>
+                </div>
+
+                <!-- 最大寬度設定 -->
+                <div class="mb-6">
+                    <label class="block text-slate-300 font-medium mb-2">最大寬度 (px)</label>
+                    <input type="number" id="maxwidth-input" value="500" min="300" max="1200"
+                        class="w-full bg-slate-800 text-white px-4 py-3 rounded-lg border border-slate-700 focus:border-[#FED926] focus:outline-none">
+                    <p class="text-slate-500 text-xs mt-2">控制 Quiz 的最大顯示寬度</p>
+                </div>
+
+                <!-- 產生按鈕 -->
+                <button id="generate-btn"
+                    class="w-full bg-[#FED926] hover:bg-[#EBC514] text-slate-950 font-black py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-[#FED926]/20">
+                    產生嵌入程式碼
+                </button>
+            </div>
+
+            <!-- 右側：程式碼區 -->
+            <div class="space-y-6">
+                <!-- 嵌入程式碼 -->
+                <div class="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-white">嵌入程式碼</h2>
+                        <button id="copy-btn"
+                            class="bg-slate-800 hover:bg-slate-700 text-[#FED926] px-4 py-2 rounded-lg border border-slate-700 hover:border-[#FED926] transition-all text-sm font-medium flex items-center gap-2">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            複製
+                        </button>
+                    </div>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800">
+                        <pre id="embed-code"
+                            class="code-block text-[#FED926] text-sm overflow-x-auto"><!-- 點擊「產生嵌入程式碼」按鈕 --></pre>
+                    </div>
+                </div>
+
+                <!-- 即時預覽 -->
+                <div class="bg-slate-900 rounded-2xl p-8 border border-slate-700">
+                    <h2 class="text-xl font-bold text-white mb-4">即時預覽</h2>
+                    <div class="bg-slate-950 rounded-lg p-4 border border-slate-800">
+                        <div id="preview-container" class="flex justify-center">
+                            <p class="text-slate-500 text-sm">點擊「產生嵌入程式碼」查看預覽</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="mt-12 bg-slate-900 rounded-2xl p-8 border border-slate-700">
+            <h2 class="text-2xl font-bold text-white mb-6">使用說明</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <div
+                        class="w-12 h-12 bg-[#FED926]/10 rounded-full flex items-center justify-center text-[#FED926] font-black text-xl mb-3">
+                        1
+                    </div>
+                    <h3 class="text-white font-bold">自訂尺寸</h3>
+                    <p class="text-slate-400 text-sm">根據您的網站版面調整 Quiz 的寬度和高度</p>
+                </div>
+                <div class="space-y-2">
+                    <div
+                        class="w-12 h-12 bg-[#FED926]/10 rounded-full flex items-center justify-center text-[#FED926] font-black text-xl mb-3">
+                        2
+                    </div>
+                    <h3 class="text-white font-bold">複製程式碼</h3>
+                    <p class="text-slate-400 text-sm">點擊「複製」按鈕，將嵌入程式碼複製到剪貼簿</p>
+                </div>
+                <div class="space-y-2">
+                    <div
+                        class="w-12 h-12 bg-[#FED926]/10 rounded-full flex items-center justify-center text-[#FED926] font-black text-xl mb-3">
+                        3
+                    </div>
+                    <h3 class="text-white font-bold">貼到網站</h3>
+                    <p class="text-slate-400 text-sm">將程式碼貼到您網站的 HTML 中即可</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 取得元素
+        const widthInput = document.getElementById('width-input');
+        const widthUnit = document.getElementById('width-unit');
+        const heightInput = document.getElementById('height-input');
+        const maxWidthInput = document.getElementById('maxwidth-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const embedCode = document.getElementById('embed-code');
+        const previewContainer = document.getElementById('preview-container');
+
+        // 產生嵌入程式碼
+        function generateEmbedCode() {
+            const width = widthInput.value + widthUnit.value;
+            const height = heightInput.value;
+            const maxWidth = maxWidthInput.value;
+
+            // 取得當前網域（部署後會自動更新）
+            const baseUrl = window.location.origin;
+
+            const code = `<!-- Ditto Quiz 嵌入程式碼 -->
+<iframe 
+  src="${baseUrl}/quiz-embed.html"
+  width="${width}"
+  height="${height}"
+  frameborder="0"
+  style="max-width: ${maxWidth}px; margin: 0 auto; display: block; border: none;"
+  title="Ditto 主機選購測驗"
+  loading="lazy"
+></iframe>`;
+
+            embedCode.textContent = code;
+
+            // 更新預覽
+            previewContainer.innerHTML = `
+                <iframe 
+                    src="${baseUrl}/quiz-embed.html"
+                    width="${width}"
+                    height="${height}"
+                    frameborder="0"
+                    style="max-width: ${maxWidth}px; margin: 0 auto; display: block; border: none;"
+                    title="Ditto 主機選購測驗"
+                ></iframe>
+            `;
+        }
+
+        // 複製到剪貼簿
+        function copyToClipboard() {
+            const code = embedCode.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                // 顯示複製成功提示
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = `
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    已複製！
+                `;
+                copyBtn.classList.add('bg-green-600', 'border-green-600');
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('bg-green-600', 'border-green-600');
+                }, 2000);
+            });
+        }
+
+        // 綁定事件
+        generateBtn.addEventListener('click', generateEmbedCode);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        // 自動產生初始程式碼
+        generateEmbedCode();
+    </script>
+
+</body>
+
+</html>
